@@ -12,7 +12,7 @@ import java.net.ServerSocket;
  * @author xuxueli 2017-11-29 17:00:25
  */
 public class NetUtil {
-    private static Logger logger = LoggerFactory.getLogger(NetUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(NetUtil.class);
 
     /**
      * find avaliable port

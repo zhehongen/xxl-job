@@ -14,7 +14,7 @@ import java.io.IOException;
  * @author xuxueli 2017-12-29 17:56:48
  */
 public class FileUtil {
-    private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
 
     /**
