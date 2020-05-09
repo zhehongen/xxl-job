@@ -51,7 +51,7 @@ public class JobScheduleHelper {
 
                 // pre-read count: treadpool-size * trigger-qps (each trigger cost 50ms, qps = 1000/50 = 20)
                 int preReadCount = (XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax() + XxlJobAdminConfig.getAdminConfig().getTriggerPoolSlowMax()) * 20;
-                logger.debug("---------zhe--------preReadCount=" + preReadCount);
+                logger.debug("---------zhe--------preReadCount= " + preReadCount);
                 while (!scheduleThreadToStop) {
 
                     // Scan Job
@@ -75,7 +75,7 @@ public class JobScheduleHelper {
 
                         // 1、pre read
                         long nowTime = System.currentTimeMillis();
-                        logger.debug("---------zhe--------nowTime=" + DateUtil.formatDateTime(new Date(nowTime)));
+                        logger.debug("---------zhe--------nowTime= " + DateUtil.formatDateTime(new Date(nowTime)));
                         //实际获取到的都是当前时间前后5秒要触发的任务。
                         // 分两种情况：
                         // 1.  过期不超过5秒的立即执行。一般不会过期吧，所以这种情况反而少                                //TriggerNextTime <= now+5
@@ -85,8 +85,8 @@ public class JobScheduleHelper {
                             // 2、push time-ring
                             for (XxlJobInfo jobInfo : scheduleList) {
 
-                                logger.debug("---------zhe--------(nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS)=" + (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS));
-                                logger.debug("---------zhe--------(nowTime > jobInfo.getTriggerNextTime())=" + (nowTime > jobInfo.getTriggerNextTime()));
+                                logger.debug("---------zhe--------(nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS)= " + (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS));
+                                logger.debug("---------zhe--------(nowTime > jobInfo.getTriggerNextTime())= " + (nowTime > jobInfo.getTriggerNextTime()));
                                 logger.debug("---------zhe--------nowTime= " + nowTime / 1000 + " getTriggerNextTime= " + jobInfo.getTriggerNextTime() / 1000);
                                 // time-ring jump
                                 if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) {// TriggerNextTime < now-5 到了触发时间超过5秒还没触发，直接跳过
@@ -192,7 +192,7 @@ public class JobScheduleHelper {
                     }
                     long cost = System.currentTimeMillis() - start;
 
-                    logger.debug("---------zhe--------cost=" + cost);
+                    logger.debug("---------zhe--------cost= " + cost + "preReadSuc= " + preReadSuc);
                     // Wait seconds, align second
                     if (cost < 1000) {  // scan-overtime, not wait
                         try {

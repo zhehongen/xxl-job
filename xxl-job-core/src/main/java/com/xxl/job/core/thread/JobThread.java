@@ -111,6 +111,7 @@ public class JobThread extends Thread {
             TriggerParam triggerParam = null;
             ReturnT<String> executeResult = null;
             try {
+                logger.debug("---------zhe--------triggerQueue= " + triggerQueue.size());
                 // to check toStop signal, we need cycle, so wo cannot use queue.take(), instand of poll(timeout)
                 triggerParam = triggerQueue.poll(3L, TimeUnit.SECONDS);
                 if (triggerParam != null) {
