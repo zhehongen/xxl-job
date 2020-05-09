@@ -23,7 +23,7 @@ import java.util.Date;
  * Created by xuxueli on 17/7/13.
  */
 public class XxlJobTrigger {
-    private static Logger logger = LoggerFactory.getLogger(XxlJobTrigger.class);
+    private static final Logger logger = LoggerFactory.getLogger(XxlJobTrigger.class);
 
     /**
      * trigger job

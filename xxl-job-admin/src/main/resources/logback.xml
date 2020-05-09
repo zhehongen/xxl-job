@@ -6,7 +6,7 @@
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%file : %line] - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -25,5 +25,7 @@
         <appender-ref ref="console"/>
         <appender-ref ref="file"/>
     </root>
-
+    <logger name="com.xxl.job" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
 </configuration>

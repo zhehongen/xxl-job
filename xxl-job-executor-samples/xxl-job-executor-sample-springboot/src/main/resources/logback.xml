@@ -25,5 +25,7 @@
         <appender-ref ref="console"/>
         <appender-ref ref="file"/>
     </root>
-
+    <logger name="com.xxl.job" level="debug" additivity="false">
+        <appender-ref ref="console"/>
+    </logger>
 </configuration>
