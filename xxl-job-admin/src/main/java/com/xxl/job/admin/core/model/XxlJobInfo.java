@@ -28,7 +28,7 @@ public class XxlJobInfo {
     private int executorTimeout;            // 任务执行超时时间，单位秒 -------传给执行器，执行器通过异步任务进行超时控制
     private int executorFailRetryCount;        // 失败重试次数 ------------调度中心，通过日志进行重试
 
-    private int RetryInterval;         //重试间隔，当log收到失败callback信息（包括失败和超时）后,当前时间加上这个时间就是下一次要重试的时间
+    private int retryInterval;         //重试间隔，当log收到失败callback信息（包括失败和超时）后,当前时间加上这个时间就是下一次要重试的时间
 
     private String glueType;        // GLUE类型	#com.xxl.job.core.glue.GlueTypeEnum
     private String glueSource;        // GLUE源代码
@@ -219,10 +219,10 @@ public class XxlJobInfo {
     }
 
     public int getRetryInterval() {
-        return RetryInterval;
+        return retryInterval;
     }
 
     public void setRetryInterval(int retryInterval) {
-        RetryInterval = retryInterval;
+        this.retryInterval = retryInterval;
     }
 }

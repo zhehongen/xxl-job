@@ -37,7 +37,7 @@ public class XxlJobLog {
     private String handleMsg;
 
     // alarm info
-    private int alarmStatus;
+    private int alarmStatus; //失败重试里面进行更改。告警状态：0-默认、-1=锁定状态、1-无需告警、2-告警成功、3-告警失败
 
     public long getId() {
         return id;

@@ -96,7 +96,7 @@ public class AdminBizImpl implements AdminBiz {
 
             }
         } else {
-            if (log.getExecutorFailRetryCount() > 0)
+            if (log.getExecutorFailRetryCount() > 0 && xxlJobInfo.getRetryInterval() > 0)
                 log.setTriggerNextTime(System.currentTimeMillis() + xxlJobInfo.getRetryInterval() * 60 * 1000);
         }
 

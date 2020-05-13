@@ -24,6 +24,8 @@
 	    <result column="handle_msg" property="handleMsg" />
 
 		<result column="alarm_status" property="alarmStatus" />
+
+		<result column="trigger_next_time" property="triggerNextTime" />
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -37,6 +39,7 @@
 		t.executor_fail_retry_count,
 		t.trigger_time,
 		t.trigger_code,
+		t.trigger_next_time,
 		t.trigger_msg,
 		t.handle_time,
 		t.handle_code,
@@ -238,7 +241,19 @@
 		ORDER BY id ASC
 		LIMIT #{pagesize}
 	</select>
-
+<!--	-->
+	<select id="findFailJobLogIdsNew" resultType="long" parameterType="java.util.HashMap" >
+		SELECT id FROM `xxl_job_log`
+		WHERE !(
+			(trigger_code in (0, 200) and handle_code = 0)
+			OR
+			(handle_code = 200)
+		)
+		AND `alarm_status` = 0
+		and t.trigger_next_time <![CDATA[ <= ]]> #{maxNextTime}
+		ORDER BY id ASC
+		LIMIT #{pagesize}
+	</select>
 	<update id="updateAlarmStatus" >
 		UPDATE xxl_job_log
 		SET

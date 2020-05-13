@@ -35,7 +35,7 @@ public class JobScheduleHelper {
 
     public void start() {
 
-        // schedule thread
+        // schedule thread todo 有没有可能这两个线程都执行
         scheduleThread = new Thread(new Runnable() {
             @Override
             public void run() {
