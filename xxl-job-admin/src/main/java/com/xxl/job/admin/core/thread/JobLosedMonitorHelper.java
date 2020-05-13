@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * job lose-monitor instance
+ * job lose-monitor instance   缺少重试机制，
  *
  * @author xuxueli 2015-9-1 18:05:56
  */

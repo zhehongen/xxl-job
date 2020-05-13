@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 
 
 /**
- * handler thread
+ * handler thread               每个job一个执行线程JobThread，被缓存起来。90秒无活动(线程的执行队列为空)就被干掉
  *
  * @author xuxueli 2016-1-16 19:52:47
  */
@@ -163,7 +163,7 @@ public class JobThread extends Thread {
                                 (executeResult != null && executeResult.getMsg() != null && executeResult.getMsg().length() > 50000)
                                         ? executeResult.getMsg().substring(0, 50000).concat("...")
                                         : executeResult.getMsg());
-                        executeResult.setContent(null);    // limit obj size
+                        executeResult.setContent(null);    // limit obj size   todo 可能需要定制化---在这里保存执行结果
                     }
                     XxlJobLogger.log("<br>----------- xxl-job job execute end(finish) -----------<br>----------- ReturnT:" + executeResult);
 

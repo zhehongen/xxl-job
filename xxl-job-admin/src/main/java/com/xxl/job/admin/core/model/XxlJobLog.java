@@ -27,6 +27,10 @@ public class XxlJobLog {
     private int triggerCode;
     private String triggerMsg;
 
+
+
+    private long triggerNextTime;    // 下次调度时间,根据配置的重试间隔设置，前提是executorFailRetryCount>0
+
     // handle info
     private Date handleTime;
     private int handleCode;
@@ -155,4 +159,11 @@ public class XxlJobLog {
         this.alarmStatus = alarmStatus;
     }
 
+    public long getTriggerNextTime() {
+        return triggerNextTime;
+    }
+
+    public void setTriggerNextTime(long triggerNextTime) {
+        this.triggerNextTime = triggerNextTime;
+    }
 }

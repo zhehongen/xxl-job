@@ -62,10 +62,12 @@ public class AdminBizImpl implements AdminBiz {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "log repeate callback.");     // avoid repeat callback, trigger child job etc
         }
 
+        XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(log.getJobId());
+
         // trigger success, to trigger child job
         String callbackMsg = null;
         if (IJobHandler.SUCCESS.getCode() == handleCallbackParam.getExecuteResult().getCode()) {
-            XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(log.getJobId());
+
             if (xxlJobInfo != null && xxlJobInfo.getChildJobId() != null && xxlJobInfo.getChildJobId().trim().length() > 0) {
                 callbackMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>" + I18nUtil.getString("jobconf_trigger_child_run") + "<<<<<<<<<<< </span><br>";
 
@@ -93,6 +95,9 @@ public class AdminBizImpl implements AdminBiz {
                 }
 
             }
+        } else {
+            if (log.getExecutorFailRetryCount() > 0)
+                log.setTriggerNextTime(System.currentTimeMillis() + xxlJobInfo.getRetryInterval() * 60 * 1000);
         }
 
         // handle msg
@@ -110,7 +115,7 @@ public class AdminBizImpl implements AdminBiz {
         if (handleMsg.length() > 15000) {
             handleMsg = new StringBuffer(handleMsg.substring(0, 15000));  // text最大64kb 避免长度过长
         }
-
+//todo 在此处更新下次重试时间
         // success, save log
         log.setHandleTime(new Date());
         log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());

@@ -25,8 +25,10 @@ public class XxlJobInfo {
     private String executorHandler;            // 执行器，任务Handler名称
     private String executorParam;            // 执行器，任务参数
     private String executorBlockStrategy;    // 阻塞处理策略
-    private int executorTimeout;            // 任务执行超时时间，单位秒
-    private int executorFailRetryCount;        // 失败重试次数
+    private int executorTimeout;            // 任务执行超时时间，单位秒 -------传给执行器，执行器通过异步任务进行超时控制
+    private int executorFailRetryCount;        // 失败重试次数 ------------调度中心，通过日志进行重试
+
+    private int RetryInterval;         //重试间隔，当log收到失败callback信息（包括失败和超时）后,当前时间加上这个时间就是下一次要重试的时间
 
     private String glueType;        // GLUE类型	#com.xxl.job.core.glue.GlueTypeEnum
     private String glueSource;        // GLUE源代码
@@ -37,7 +39,7 @@ public class XxlJobInfo {
 
     private int triggerStatus;        // 调度状态：0-停止，1-运行
     private long triggerLastTime;    // 上次调度时间
-    private long triggerNextTime;    // 下次调度时间
+    private long triggerNextTime;    // 下次调度时间   ----初次更新是靠start动作；系统重启后是靠JobScheduleHelper#scheduleThread更新
 
 
     public int getId() {
@@ -214,5 +216,13 @@ public class XxlJobInfo {
 
     public void setTriggerNextTime(long triggerNextTime) {
         this.triggerNextTime = triggerNextTime;
+    }
+
+    public int getRetryInterval() {
+        return RetryInterval;
+    }
+
+    public void setRetryInterval(int retryInterval) {
+        RetryInterval = retryInterval;
     }
 }

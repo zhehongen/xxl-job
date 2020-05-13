@@ -48,11 +48,12 @@ public class JobFailMonitorHelper {
                                 if (lockRet < 1) {
                                     continue;
                                 }
+                                //每次trigger一次执行，都会生成一条log,所以log是鲜活的。不会出现TriggerMsg叠加问题
                                 XxlJobLog log = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().load(failLogId);
                                 XxlJobInfo info = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(log.getJobId());
 
                                 // 1、fail retry monitor
-                                if (log.getExecutorFailRetryCount() > 0) {
+                                if (log.getExecutorFailRetryCount() > 0) {                               //此处会将重试次数减1
                                     JobTriggerPoolHelper.trigger(log.getJobId(), TriggerTypeEnum.RETRY, (log.getExecutorFailRetryCount() - 1), log.getExecutorShardingParam(), log.getExecutorParam(), null);
                                     String retryMsg = "<br><br><span style=\"color:#F39C12;\" > >>>>>>>>>>>" + I18nUtil.getString("jobconf_trigger_type_retry") + "<<<<<<<<<<< </span><br>";
                                     log.setTriggerMsg(log.getTriggerMsg() + retryMsg);
