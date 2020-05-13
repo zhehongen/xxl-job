@@ -35,7 +35,7 @@ public class JobScheduleHelper {
 
     public void start() {
 
-        // schedule thread todo 有没有可能这两个线程都执行
+        // schedule thread todo 有没有可能这两个线程都执行，不会，因为已经更新了nextTriggerTime
         scheduleThread = new Thread(new Runnable() {
             @Override
             public void run() {
