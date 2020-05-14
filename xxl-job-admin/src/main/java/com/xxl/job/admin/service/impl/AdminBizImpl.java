@@ -14,6 +14,7 @@ import com.xxl.job.core.biz.model.HandleCallbackParam;
 import com.xxl.job.core.biz.model.RegistryParam;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
+import com.xxl.job.core.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -96,8 +97,11 @@ public class AdminBizImpl implements AdminBiz {
 
             }
         } else {
-            if (log.getExecutorFailRetryCount() > 0 && xxlJobInfo.getRetryInterval() > 0)
+            if (log.getExecutorFailRetryCount() > 0 && xxlJobInfo.getRetryInterval() > 0) {
                 log.setTriggerNextTime(System.currentTimeMillis() + xxlJobInfo.getRetryInterval() * 60 * 1000);
+                logger.debug("---------zhe--------logId= " + log.getId());
+                logger.info("log.TriggerNextTime: " + DateUtil.formatDateTime(new Date(log.getTriggerNextTime())) + "-------------------------------------------------------------------");
+            }
         }
 
         // handle msg

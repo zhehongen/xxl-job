@@ -192,7 +192,7 @@ public class JobScheduleHelper {
                     }
                     long cost = System.currentTimeMillis() - start;
 
-                    logger.debug("---------zhe--------cost= " + cost + "preReadSuc= " + preReadSuc);
+                    logger.debug("---------zhe--------cost= " + cost + " preReadSuc= " + preReadSuc);
                     // Wait seconds, align second
                     if (cost < 1000) {  // scan-overtime, not wait
                         try {

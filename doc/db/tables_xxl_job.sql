@@ -44,7 +44,7 @@ CREATE TABLE `xxl_job_info` (
   `executor_block_strategy` varchar(50) DEFAULT NULL COMMENT '阻塞处理策略',
   `executor_timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行超时时间，单位秒',
   `executor_fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
-  `executor_fail_retry_interval` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试间隔',
+  `retry_interval` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试间隔',
   `glue_type` varchar(50) NOT NULL COMMENT 'GLUE类型',
   `glue_source` mediumtext COMMENT 'GLUE源代码',
   `glue_remark` varchar(128) DEFAULT NULL COMMENT 'GLUE备注',

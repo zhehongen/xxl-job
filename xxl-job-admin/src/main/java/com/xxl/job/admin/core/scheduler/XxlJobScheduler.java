@@ -51,7 +51,7 @@ public class XxlJobScheduler {
         JobRegistryMonitorHelper.getInstance().start();
 
         // admin fail-monitor run
-        JobFailMonitorHelper.getInstance().start();
+        JobFailMonitorHelperNew.getInstance().start();
 
         // admin lose-monitor run
         JobLosedMonitorHelper.getInstance().start();

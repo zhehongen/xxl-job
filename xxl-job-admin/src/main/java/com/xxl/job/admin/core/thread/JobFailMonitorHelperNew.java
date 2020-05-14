@@ -68,7 +68,7 @@ public class JobFailMonitorHelperNew {
                         connAutoCommit = conn.getAutoCommit();
                         conn.setAutoCommit(false);
 
-                        preparedStatement = conn.prepareStatement("select * from xxl_fail_retry_lock where lock_name = 'fail_retry_lock' for update");
+                        preparedStatement = conn.prepareStatement("select * from xxl_fail_retry_lock where fail_retry_lock_name = 'fail_retry_lock' for update");
                         preparedStatement.execute();
 
                         long nowTime = System.currentTimeMillis();
@@ -91,6 +91,10 @@ public class JobFailMonitorHelperNew {
                                 // 1、fail retry monitor
                                 if (log.getExecutorFailRetryCount() > 0) {//需要重试
 
+                                    logger.debug("---------zhe--------logId= " + failLogId);
+                                    logger.debug("---------zhe--------(nowTime > jobInfo.getTriggerNextTime())= " + (nowTime > log.getTriggerNextTime()));
+                                    logger.debug("---------zhe--------nowTime= " + nowTime / 1000 + " getTriggerNextTime= " + log.getTriggerNextTime() / 1000);
+
                                     if (nowTime >= log.getTriggerNextTime()) {//立即执行
                                         //--------------------------------------------------------------------此处会将重试次数减1
                                         JobTriggerPoolHelper.trigger(log.getJobId(), TriggerTypeEnum.RETRY, (log.getExecutorFailRetryCount() - 1), log.getExecutorShardingParam(), log.getExecutorParam(), null);
@@ -107,7 +111,8 @@ public class JobFailMonitorHelperNew {
                                     }
                                 }
                                 if (needRetryButHaveNot) {//恢复原样 todo 有可能永远成为锁定状态
-                                    XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateAlarmStatus(failLogId, -1, 0);
+                                    //不恢复为0了，在ring中处理后再设置，保证快慢线程不同时处理同一条日志
+                                    //XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateAlarmStatus(failLogId, -1, 0);
                                 } else {
                                     // 2、fail alarm monitor
                                     int newAlarmStatus = 0;        // 告警状态：0-默认、-1=锁定状态、1-无需告警、2-告警成功、3-告警失败
@@ -169,7 +174,7 @@ public class JobFailMonitorHelperNew {
 
                         long cost = System.currentTimeMillis() - start;
 
-                        logger.debug("---------zhe--------fail retry cost= " + cost + "preReadSuc= " + preReadSuc);
+                        logger.debug("---------zhe--------fail retry cost= " + cost + " preReadSuc= " + preReadSuc);
                         // Wait seconds, align second
                         if (cost < 1000) {  // scan-overtime, not wait
                             try {
@@ -223,7 +228,7 @@ public class JobFailMonitorHelperNew {
                         }
 
                         // ring trigger
-                        logger.debug(">>>>>>>>>>> xxl-job, time-ring beat : " + nowSecond + " = " + Arrays.asList(ringItemData));
+                        logger.debug(">>>>>>>>>>> xxl-job,fail retry time-ring beat : " + nowSecond + " = " + Arrays.asList(ringItemData));
                         if (ringItemData.size() > 0) {
                             // do trigger
                             for (long logId : ringItemData) {
@@ -234,6 +239,19 @@ public class JobFailMonitorHelperNew {
                                 log.setTriggerMsg(log.getTriggerMsg() + retryMsg);
                                 XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateTriggerInfo(log);
                                 // todo 报警没做
+
+                                XxlJobInfo info = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(log.getJobId());
+
+                                // 2、fail alarm monitor
+                                int newAlarmStatus = 0;        // 告警状态：0-默认、-1=锁定状态、1-无需告警、2-告警成功、3-告警失败
+                                if (info != null && info.getAlarmEmail() != null && info.getAlarmEmail().trim().length() > 0) {
+                                    boolean alarmResult = XxlJobAdminConfig.getAdminConfig().getJobAlarmer().alarm(info, log);
+                                    newAlarmStatus = alarmResult ? 2 : 3;
+                                } else {
+                                    newAlarmStatus = 1;
+                                }
+
+                                XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().updateAlarmStatus(logId, -1, newAlarmStatus);
                             }
                             // clear
                             ringItemData.clear();
@@ -262,14 +280,61 @@ public class JobFailMonitorHelperNew {
     }
 
     public void toStop() {
+
+        // 1、stop schedule
         toStop = true;
-        // interrupt and wait
-        monitorThread.interrupt();
         try {
-            monitorThread.join();
+            TimeUnit.SECONDS.sleep(1);  // wait
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
         }
+        if (monitorThread.getState() != Thread.State.TERMINATED) {
+            // interrupt and wait
+            monitorThread.interrupt();
+            try {
+                monitorThread.join();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        // if has ring data
+        boolean hasRingData = false;
+        if (!ringData.isEmpty()) {
+            for (int second : ringData.keySet()) {
+                List<Long> tmpData = ringData.get(second);
+                if (tmpData != null && tmpData.size() > 0) {
+                    hasRingData = true;
+                    break;
+                }
+            }
+        }
+        if (hasRingData) {
+            try {
+                TimeUnit.SECONDS.sleep(8);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        // stop ring (wait job-in-memory stop)
+        ringThreadToStop = true;
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+        }
+        if (ringThread.getState() != Thread.State.TERMINATED) {
+            // interrupt and wait
+            ringThread.interrupt();
+            try {
+                ringThread.join();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        logger.info(">>>>>>>>>>> xxl-job, JobFailMonitorHelper stop");
     }
 
     private void pushTimeRing(int ringSecond, Long logId) {

@@ -158,6 +158,7 @@
 		SET 
 			`handle_time`= #{handleTime}, 
 			`handle_code`= #{handleCode},
+			`trigger_next_time`= #{triggerNextTime},
 			`handle_msg`= #{handleMsg}
 		WHERE `id`= #{id}
 	</update>
@@ -250,7 +251,7 @@
 			(handle_code = 200)
 		)
 		AND `alarm_status` = 0
-		and t.trigger_next_time <![CDATA[ <= ]]> #{maxNextTime}
+		and trigger_next_time <![CDATA[ <= ]]> #{maxNextTime}
 		ORDER BY id ASC
 		LIMIT #{pagesize}
 	</select>
