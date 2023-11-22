@@ -18,8 +18,10 @@ public class AdminBizClient implements AdminBiz {
     private String addressUrl;
     private String accessToken;
     private final int timeout = 3;
+
     public AdminBizClient() {
     }
+
     public AdminBizClient(String addressUrl, String accessToken) {
         this.addressUrl = addressUrl;
         this.accessToken = accessToken;

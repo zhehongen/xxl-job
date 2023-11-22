@@ -40,7 +40,8 @@ public class SampleXxlJob {
     @XxlJob("demoJobHandler")
     public ReturnT<String> demoJobHandler(String param) throws Exception {
         XxlJobLogger.log("XXL-JOB, Hello World.");
-
+//        if (1 == 1)
+//            throw new Exception("test sea wei");
         for (int i = 0; i < 5; i++) {
             logger.info("beat at:" + i);
             XxlJobLogger.log("beat at:" + i);

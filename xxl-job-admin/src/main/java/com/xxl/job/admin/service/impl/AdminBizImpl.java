@@ -96,7 +96,7 @@ public class AdminBizImpl implements AdminBiz {
                 }
 
             }
-        } else {
+        } else {//todo 在此处更新下次重试时间
             if (log.getExecutorFailRetryCount() > 0 && xxlJobInfo.getRetryInterval() > 0) {
                 log.setTriggerNextTime(System.currentTimeMillis() + xxlJobInfo.getRetryInterval() * 60 * 1000);
                 logger.debug("---------zhe--------logId= " + log.getId());
@@ -119,7 +119,7 @@ public class AdminBizImpl implements AdminBiz {
         if (handleMsg.length() > 15000) {
             handleMsg = new StringBuffer(handleMsg.substring(0, 15000));  // text最大64kb 避免长度过长
         }
-//todo 在此处更新下次重试时间
+
         // success, save log
         log.setHandleTime(new Date());
         log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
